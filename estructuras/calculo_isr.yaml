@@ -1,0 +1,317 @@
+openapi: 3.0.4
+info:
+  title: Schema de Calculo de ISR
+  version: 1.0.0
+  description: Representación de Schema de calculos de ISR.
+  contact:
+    email: desarrollo@totalnot.mx
+servers:
+  - url: https://alcadev.homeip.net
+paths:
+  /calcular-venta:
+    post:
+      summary: Calcula el impuesto sobre la renta (ISR) por la venta de un inmueble.
+      operationId: CalcularIsr
+      requestBody:
+        description: Calcula el ISR usando los datos de la operacion
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Operacion"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Operacion"
+      responses:
+        "200":
+          description: Cálculo exitoso del ISR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalIsr:
+                    type: number
+                    format: float
+                    description: Monto total del ISR
+                    example: 123456.78
+                  isrFederacion:
+                    type: number
+                    format: float
+                    description: Monto calculado a la federacion del ISR
+                    example: 23456.78
+                  isrEntidadFederativa:
+                    type: number
+                    format: float
+                    description: Monto calculado a la entidad federativa del ISR
+                    example: 13456.78
+                  detalles:
+                    type: string
+                    description: Detalles del cálculo
+                    example: "ISR calculado con base en tablas del SAT para el año 2025."
+        "400":
+          description: Solicitud inválida (faltan datos o datos incorrectos)
+components:
+  schemas:
+    Operacion:
+      required:
+        - datosInmueble
+        - montoVentaTerreno
+        - montoVentaConstruccionTotal
+        - montoVentaConstruccionComercial
+        - costoAvaluoTerreno
+        - costoAvaluoConstruccion
+        - montoCatastralTerreno
+        - montoCatastralConstruccion
+        - fechaVenta
+        - adquisiciones
+        - enajenantes
+        - deducciones
+        - configuracion
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador la operacion
+          example: 1
+        datosInmueble:
+          $ref: "#/components/schemas/DatosInmueble"
+        montoVentaTerreno:
+          type: number
+          format: float
+          description: Precio de la venta del terreno expresada en nuevos pesos mexicanos (MXN)
+          example: 200.01
+        montoVentaConstruccionTotal:
+          type: number
+          format: float
+          description: Precio de la venta de la construccion total expresada en nuevos pesos mexicanos (MXN)
+          example: 200.02
+        montoVentaConstruccionComercial:
+          type: number
+          format: float
+          description: Precio de la venta de la construccion comercial expresada en nuevos pesos mexicanos (MXN)
+          example: 200.03
+        fechaVenta:
+          type: string
+          format: date
+          description: Fecha de la venta del inmueble
+          example: 2025-04-15
+        costoAvaluoTerreno:
+          type: number
+          format: float
+          description: Costo del avaluo del terreno expresada en nuevos pesos mexicanos (MXN)
+          example: 300.01
+        costoAvaluoConstruccion:
+          type: number
+          format: float
+          description: Costo del avaluo de la construccion expresada en nuevos pesos mexicanos (MXN)
+          example: 300.02
+        montoCatastralTerreno:
+          type: number
+          format: float
+          description: Monto catastral del terreno expresada en nuevos pesos mexicanos (MXN)
+          example: 400.01
+        montoCatastralConstruccion:
+          type: number
+          format: float
+          description: Monto catastral de la construccion expresada en nuevos pesos mexicanos (MXN)
+          example: 400.02
+        adquisiciones:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: "#/components/schemas/Adquisicion"
+        enajenantes:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: "#/components/schemas/Enajenante"
+        deducciones:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: "#/components/schemas/Deduccion"
+        configuracion:
+          $ref: "#/components/schemas/ConfiguracionCalculo"
+    Adquisicion:
+      required:
+        - tipo
+        - montoAdquisicion
+        - fechaAdquisicion
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la adquisicion
+          example: 1
+        tipo:
+          type: object
+          $ref: "#/components/schemas/TipoAdquisiciones"
+        montoAdquisicion:
+          type: number
+          format: float
+          description: Precio de la adquisicion expresada en nuevos pesos mexicanos (MXN)
+          example: 200.01
+        fechaAdquisicion:
+          type: string
+          format: date
+          description: Fecha de la adquisicion de la adquisicion o Fecha de final de construccion
+          example: 2025-04-15
+    Enajenante:
+      required:
+        - tipo
+        - porcentaje
+        - notarioRetiene
+        - residenteFiscalMexico
+        - excentaImpuesto
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del enajenante
+          example: 1
+        tipo:
+          type: object
+          $ref: "#/components/schemas/TipoEnajenantes"
+        porcentaje:
+          type: number
+          format: float
+          description: Porcentaje (%) de enajenacion del inmueble en numero entero
+          example: 99
+        notarioRetiene:
+          type: boolean
+          description: Indica si al enajenante se le debe retener el impuesto
+          example: true
+        residenteFiscalMexico:
+          type: boolean
+          description: Indica si el enajenante tiene residencia fiscal en el extranjero
+          example: true
+        excentaImpuesto:
+          type: boolean
+          description: Indica si el enajenante excenta el impuesto
+          example: true
+    Deduccion:
+      required:
+        - tipo
+        - enajenantesConsiderados
+        - conceptoDeduccion
+        - montoDeduccion
+        - fechaDeduccion
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la deduccion
+          example: 1
+        tipo:
+          type: object
+          $ref: "#/components/schemas/TipoDeducciones"
+        enajenantesConsiderados:
+          type: array
+          description: Lista de identificadores de los enajenantes
+          xml:
+            wrapped: true
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Identificador del enajenante
+                example: 1
+        conceptoDeduccion:
+          type: string
+          description: Detalles del cálculo
+          example: "ISR calculado con base en tablas del SAT para el año 2025."
+        montoDeduccion:
+          type: number
+          format: float
+          description: Monto total (Sin proporción de la deduccion expresada) de la deduccion expresada en nuevos pesos mexicanos (MXN)
+          example: 200.01
+        fechaDeduccion:
+          type: string
+          format: date
+          description: Fecha de la deduccion
+          example: 2025-04-15
+    ConfiguracionCalculo:
+      required:
+        - primeraEnajenacionParcelaEjidal
+        - compensarGananciaPerdida
+        - metodoCalculoActualizacion
+      properties:
+        primeraEnajenacionParcelaEjidal:
+          type: boolean
+          description: Indica si es una parcela y es su primera venta
+          example: true
+        compensarGananciaPerdida:
+          type: boolean
+          description: Indica si se compensa el calcuo cuando existe perdida por parte del calculo
+          example: true
+        metodoCalculoActualizacion:
+          $ref: "#/components/schemas/TipoCalculos"
+    DatosInmueble:
+      required:
+        - tipoInmueble
+        - metrosTerreno
+        - metrosDesplanteConstruccion
+      properties:
+        tipoInmueble:
+          $ref: "#/components/schemas/TipoInmuebles"
+        metrosTerreno:
+          type: number
+          format: float
+          description: Metros cuadrados del terreno
+          example: 10.01
+        metrosDesplanteConstruccion:
+          type: number
+          format: float
+          description: Metros cuadrados de desplante de la construccion
+          example: 5.05
+    TipoCalculos:
+      type: integer
+      description: >
+        Tipo de inmueble: 
+          - 1 = Solo INPC
+          - 2 = Solo Anexo 9
+          - 3 = El mas conveniente
+          - 4 = Mixto
+      enum: [1, 2, 3, 4]
+    TipoInmuebles:
+      type: integer
+      description: >
+        Tipo de inmueble: 
+          - 1 = Terreno
+          - 2 = Terreno Comercial
+          - 3 = Habitacional
+          - 4 = Comercial
+          - 5 = Mixto
+      enum: [1, 2, 3, 4, 5]
+    TipoAdquisiciones:
+      type: integer
+      description: >
+        Tipo de adquisicion: 
+          - 1 = Terreno
+          - 2 = Construcción
+      enum: [1, 2]
+    TipoEnajenantes:
+      type: integer
+      description: >
+        Tipo de enajenante: 
+          - 1 = Persona Fisica
+          - 2 = Persona Moral
+      enum: [1, 2]
+    TipoDeducciones:
+      type: integer
+      description: >
+        Tipo de deduccion: 
+          - 1 = Solo afecta al terreno
+          - 2 = Solo afecta la construccion
+          - 3 = Afecta al terreno y a la construccion (Segun su proporcion)
+      enum: [1, 2, 3]
