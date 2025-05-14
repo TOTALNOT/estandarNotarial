@@ -6,7 +6,7 @@ info:
   contact:
     email: desarrollo@totalnot.mx
 servers:
-  - url: https://alcadev.homeip.net
+  - url: https://api.example.com
 paths:
   /calcular-venta:
     post:
