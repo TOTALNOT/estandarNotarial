@@ -1,10 +1,9 @@
+#Leer en https://editor.swagger.io/
 openapi: 3.0.4
 info:
   title: Schema de Calculo de ISR
   version: 1.0.0
   description: Representación de Schema de calculos de ISR.
-  contact:
-    email: desarrollo@totalnot.mx
 servers:
   - url: https://api.example.com
 paths:
@@ -29,6 +28,12 @@ paths:
             application/json:
               schema:
                 type: object
+                example:
+                  totalIsr: 123456.78
+                  isrFederacion: 23456.78
+                  isrEntidadFederativa: 13456.78
+                  detalles: "ISR calculado con base en tablas del SAT para el año 2025."
+                additionalProperties: false
                 properties:
                   totalIsr:
                     type: number
@@ -47,10 +52,26 @@ paths:
                     example: 13456.78
                   detalles:
                     type: string
+                    maxLength: 255
+                    pattern: "^[A-Za-z0-9_ ]+"
                     description: Detalles del cálculo
                     example: "ISR calculado con base en tablas del SAT para el año 2025."
-        "400":
-          description: Solicitud inválida (faltan datos o datos incorrectos)
+        "default":
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: "Error al calcular el ISR"
+                additionalProperties: false
+                properties:
+                  error:
+                    type: string
+                    pattern: "^[A-Za-z0-9_ ]+"
+                    maxLength: 255
+                    description: Mensaje de error
+                    example: "Error al calcular el ISR"
 components:
   schemas:
     Operacion:
@@ -69,9 +90,51 @@ components:
         - deducciones
         - configuracion
       type: object
+      example:
+        id: 1
+        datosInmueble:
+          tipoInmueble: 1
+          metrosTerreno: 10.01
+          metrosDesplanteConstruccion: 5.05
+        montoVentaTerreno: 200.01
+        montoVentaConstruccionTotal: 200.02
+        montoVentaConstruccionComercial: 200.03
+        fechaVenta: "2025-04-15"
+        costoAvaluoTerreno: 300.01
+        costoAvaluoConstruccion: 300.02
+        montoCatastralTerreno: 400.01
+        montoCatastralConstruccion: 400.02
+        adquisiciones:
+          - id: 1
+            tipo: 1
+            montoAdquisicion: 200.01
+            fechaAdquisicion: "2025-04-15"
+        enajenantes:
+          - id: 1
+            tipo: 1
+            porcentaje: 99
+            notarioRetiene: true
+            residenteFiscalMexico: true
+            excentaImpuesto: true
+        deducciones:
+          - id: 1
+            tipo: 1
+            enajenantesConsiderados:
+              - id: 1
+              - id: 2
+            conceptoDeduccion: "ISR calculado con base en tablas del SAT para el año 2025."
+            montoDeduccion: 200.01
+            fechaDeduccion: "2025-04-15"
+        configuracion:
+          primeraEnajenacionParcelaEjidal: true
+          compensarGananciaPerdida: true
+          metodoCalculoActualizacion: 1
+      additionalProperties: false
       properties:
         id:
           type: integer
+          minimum: 0
+          maximum: 9223372036854775807
           format: int64
           description: Identificador la operacion
           example: 1
@@ -79,58 +142,77 @@ components:
           $ref: "#/components/schemas/DatosInmueble"
         montoVentaTerreno:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Precio de la venta del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
         montoVentaConstruccionTotal:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Precio de la venta de la construccion total expresada en nuevos pesos mexicanos (MXN)
           example: 200.02
         montoVentaConstruccionComercial:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Precio de la venta de la construccion comercial expresada en nuevos pesos mexicanos (MXN)
           example: 200.03
         fechaVenta:
           type: string
+          maxLength: 10
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           format: date
           description: Fecha de la venta del inmueble
           example: 2025-04-15
         costoAvaluoTerreno:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Costo del avaluo del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 300.01
         costoAvaluoConstruccion:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Costo del avaluo de la construccion expresada en nuevos pesos mexicanos (MXN)
           example: 300.02
         montoCatastralTerreno:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Monto catastral del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 400.01
         montoCatastralConstruccion:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Monto catastral de la construccion expresada en nuevos pesos mexicanos (MXN)
           example: 400.02
         adquisiciones:
           type: array
+          maxItems: 999
           xml:
             wrapped: true
           items:
             $ref: "#/components/schemas/Adquisicion"
         enajenantes:
           type: array
+          maxItems: 999
           xml:
             wrapped: true
           items:
             $ref: "#/components/schemas/Enajenante"
         deducciones:
           type: array
+          maxItems: 999
           xml:
             wrapped: true
           items:
@@ -143,22 +225,33 @@ components:
         - montoAdquisicion
         - fechaAdquisicion
       type: object
+      example:
+        id: 1
+        tipo: 1
+        montoAdquisicion: 200.01
+        fechaAdquisicion: "2025-04-15"
+      additionalProperties: false
       properties:
         id:
           type: integer
+          minimum: 0
+          maximum: 9223372036854775807
           format: int64
           description: Identificador de la adquisicion
           example: 1
         tipo:
-          type: object
           $ref: "#/components/schemas/TipoAdquisiciones"
         montoAdquisicion:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Precio de la adquisicion expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
         fechaAdquisicion:
           type: string
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          maxLength: 10
           format: date
           description: Fecha de la adquisicion de la adquisicion o Fecha de final de construccion
           example: 2025-04-15
@@ -170,17 +263,28 @@ components:
         - residenteFiscalMexico
         - excentaImpuesto
       type: object
+      example:
+        id: 1
+        tipo: 1
+        porcentaje: 99
+        notarioRetiene: true
+        residenteFiscalMexico: true
+        excentaImpuesto: true
+      additionalProperties: false
       properties:
         id:
           type: integer
+          minimum: 0
+          maximum: 9223372036854775807
           format: int64
           description: Identificador del enajenante
           example: 1
         tipo:
-          type: object
           $ref: "#/components/schemas/TipoEnajenantes"
         porcentaje:
           type: number
+          minimum: 0
+          maximum: 100
           format: float
           description: Porcentaje (%) de enajenacion del inmueble en numero entero
           example: 99
@@ -204,43 +308,72 @@ components:
         - montoDeduccion
         - fechaDeduccion
       type: object
+      example:
+        id: 1
+        tipo: 1
+        enajenantesConsiderados:
+          - id: 1
+          - id: 2
+        conceptoDeduccion: "ISR calculado con base en tablas del SAT para el año 2025."
+        montoDeduccion: 200.01
+        fechaDeduccion: "2025-04-15"
+      additionalProperties: false
       properties:
         id:
           type: integer
+          minimum: 0
+          maximum: 9223372036854775807
           format: int64
           description: Identificador de la deduccion
           example: 1
         tipo:
-          type: object
           $ref: "#/components/schemas/TipoDeducciones"
         enajenantesConsiderados:
           type: array
+          maxItems: 999
           description: Lista de identificadores de los enajenantes
           xml:
             wrapped: true
           items:
             type: object
+            example:
+              id: 1
+            additionalProperties: false
             properties:
               id:
                 type: integer
+                minimum: 0
+                maximum: 9223372036854775807
                 format: int64
                 description: Identificador del enajenante
                 example: 1
         conceptoDeduccion:
           type: string
+          pattern: "^[A-Za-z0-9_ ]+"
+          maxLength: 255
           description: Concepto de la deduccion
           example: "Mejoras a la construccion"
         montoDeduccion:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Monto total (Sin proporción de la deduccion expresada) de la deduccion expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
         fechaDeduccion:
           type: string
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          maxLength: 255
           format: date
           description: Fecha de la deduccion
           example: 2025-04-15
     ConfiguracionCalculo:
+      type: object
+      example:
+        primeraEnajenacionParcelaEjidal: true
+        compensarGananciaPerdida: true
+        metodoCalculoActualizacion: 1
+      additionalProperties: false
       required:
         - primeraEnajenacionParcelaEjidal
         - compensarGananciaPerdida
@@ -257,6 +390,12 @@ components:
         metodoCalculoActualizacion:
           $ref: "#/components/schemas/TipoCalculos"
     DatosInmueble:
+      type: object
+      example:
+        tipoInmueble: 1
+        metrosTerreno: 10.01
+        metrosDesplanteConstruccion: 5.05
+      additionalProperties: false
       required:
         - tipoInmueble
         - metrosTerreno
@@ -266,11 +405,15 @@ components:
           $ref: "#/components/schemas/TipoInmuebles"
         metrosTerreno:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Metros cuadrados del terreno
           example: 10.01
         metrosDesplanteConstruccion:
           type: number
+          minimum: 0
+          maximum: 999999999999999.99
           format: float
           description: Metros cuadrados de desplante de la construccion
           example: 5.05
@@ -283,6 +426,7 @@ components:
           - 3 = El mas conveniente
           - 4 = Mixto
       enum: [1, 2, 3, 4]
+      example: 1
     TipoInmuebles:
       type: integer
       description: >
@@ -293,6 +437,7 @@ components:
           - 4 = Comercial
           - 5 = Mixto
       enum: [1, 2, 3, 4, 5]
+      example: 1
     TipoAdquisiciones:
       type: integer
       description: >
@@ -300,6 +445,7 @@ components:
           - 1 = Terreno
           - 2 = Construcción
       enum: [1, 2]
+      example: 1
     TipoEnajenantes:
       type: integer
       description: >
@@ -307,6 +453,7 @@ components:
           - 1 = Persona Fisica
           - 2 = Persona Moral
       enum: [1, 2]
+      example: 1
     TipoDeducciones:
       type: integer
       description: >
@@ -315,3 +462,4 @@ components:
           - 2 = Solo afecta la construccion
           - 3 = Afecta al terreno y a la construccion (Segun su proporcion)
       enum: [1, 2, 3]
+      example: 1
