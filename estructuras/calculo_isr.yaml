@@ -228,8 +228,8 @@ components:
                 example: 1
         conceptoDeduccion:
           type: string
-          description: Detalles del cálculo
-          example: "ISR calculado con base en tablas del SAT para el año 2025."
+          description: Concepto de la deduccion
+          example: "Mejoras a la construccion"
         montoDeduccion:
           type: number
           format: float
