@@ -7,7 +7,7 @@ info:
 servers:
   - url: https://api.example.com
 paths:
-  /calcular-venta:
+  /calcular_venta:
     post:
       summary: Calcula el impuesto sobre la renta (ISR) por la venta de un inmueble.
       operationId: CalcularIsr
@@ -29,23 +29,23 @@ paths:
               schema:
                 type: object
                 example:
-                  totalIsr: 123456.78
-                  isrFederacion: 23456.78
-                  isrEntidadFederativa: 13456.78
+                  total_isr: 123456.78
+                  isr_federacion: 23456.78
+                  isr_entidad_federativa: 13456.78
                   detalles: "ISR calculado con base en tablas del SAT para el año 2025."
                 additionalProperties: false
                 properties:
-                  totalIsr:
+                  total_isr:
                     type: number
                     format: float
                     description: Monto total del ISR
                     example: 123456.78
-                  isrFederacion:
+                  isr_federacion:
                     type: number
                     format: float
                     description: Monto calculado a la federacion del ISR
                     example: 23456.78
-                  isrEntidadFederativa:
+                  isr_entidad_federativa:
                     type: number
                     format: float
                     description: Monto calculado a la entidad federativa del ISR
@@ -76,15 +76,15 @@ components:
   schemas:
     Operacion:
       required:
-        - datosInmueble
-        - montoVentaTerreno
-        - montoVentaConstruccionTotal
-        - montoVentaConstruccionComercial
-        - costoAvaluoTerreno
-        - costoAvaluoConstruccion
-        - montoCatastralTerreno
-        - montoCatastralConstruccion
-        - fechaVenta
+        - datos_inmueble
+        - monto_venta_terreno
+        - monto_venta_construccion_total
+        - monto_venta_construccion_comercial
+        - costo_avaluo_terreno
+        - costo_avaluo_construccion
+        - monto_catastral_terreno
+        - monto_catastral_construccion
+        - fecha_venta
         - adquisiciones
         - enajenantes
         - deducciones
@@ -92,43 +92,43 @@ components:
       type: object
       example:
         id: 1
-        datosInmueble:
-          tipoInmueble: 1
-          metrosTerreno: 10.01
-          metrosDesplanteConstruccion: 5.05
-        montoVentaTerreno: 200.01
-        montoVentaConstruccionTotal: 200.02
-        montoVentaConstruccionComercial: 200.03
-        fechaVenta: "2025-04-15"
-        costoAvaluoTerreno: 300.01
-        costoAvaluoConstruccion: 300.02
-        montoCatastralTerreno: 400.01
-        montoCatastralConstruccion: 400.02
+        datos_inmueble:
+          tipo_inmueble: 1
+          metros_terreno: 10.01
+          metros_desplante_construccion: 5.05
+        monto_venta_terreno: 200.01
+        monto_venta_construccion_total: 200.02
+        monto_venta_construccion_comercial: 200.03
+        fecha_venta: "2025-04-15"
+        costo_avaluo_terreno: 300.01
+        costo_avaluo_construccion: 300.02
+        monto_catastral_terreno: 400.01
+        monto_catastral_construccion: 400.02
         adquisiciones:
           - id: 1
             tipo: 1
-            montoAdquisicion: 200.01
-            fechaAdquisicion: "2025-04-15"
+            monto_adquisicion: 200.01
+            fecha_adquisicion: "2025-04-15"
         enajenantes:
           - id: 1
             tipo: 1
             porcentaje: 99
-            notarioRetiene: true
-            residenteFiscalMexico: true
-            excentaImpuesto: true
+            notario_retiene: true
+            residente_fiscal_mexico: true
+            excenta_impuesto: true
         deducciones:
           - id: 1
             tipo: 1
-            enajenantesConsiderados:
+            enajenantes_considerados:
               - id: 1
               - id: 2
-            conceptoDeduccion: "ISR calculado con base en tablas del SAT para el año 2025."
-            montoDeduccion: 200.01
-            fechaDeduccion: "2025-04-15"
+            concepto_deduccion: "ISR calculado con base en tablas del SAT para el año 2025."
+            monto_deduccion: 200.01
+            fecha_deduccion: "2025-04-15"
         configuracion:
-          primeraEnajenacionParcelaEjidal: true
-          compensarGananciaPerdida: true
-          metodoCalculoActualizacion: 1
+          primera_enajenacion_parcela_ejidal: true
+          compensar_ganancia_perdida: true
+          metodo_calculo_actualizacion: 1
       additionalProperties: false
       properties:
         id:
@@ -138,58 +138,58 @@ components:
           format: int64
           description: Identificador la operacion
           example: 1
-        datosInmueble:
+        datos_inmueble:
           $ref: "#/components/schemas/DatosInmueble"
-        montoVentaTerreno:
+        monto_venta_terreno:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Precio de la venta del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
-        montoVentaConstruccionTotal:
+        monto_venta_construccion_total:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Precio de la venta de la construccion total expresada en nuevos pesos mexicanos (MXN)
           example: 200.02
-        montoVentaConstruccionComercial:
+        monto_venta_construccion_comercial:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Precio de la venta de la construccion comercial expresada en nuevos pesos mexicanos (MXN)
           example: 200.03
-        fechaVenta:
+        fecha_venta:
           type: string
           maxLength: 10
           pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           format: date
           description: Fecha de la venta del inmueble
           example: 2025-04-15
-        costoAvaluoTerreno:
+        costo_avaluo_terreno:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Costo del avaluo del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 300.01
-        costoAvaluoConstruccion:
+        costo_avaluo_construccion:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Costo del avaluo de la construccion expresada en nuevos pesos mexicanos (MXN)
           example: 300.02
-        montoCatastralTerreno:
+        monto_catastral_terreno:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Monto catastral del terreno expresada en nuevos pesos mexicanos (MXN)
           example: 400.01
-        montoCatastralConstruccion:
+        monto_catastral_construccion:
           type: number
           minimum: 0
           maximum: 999999999999999.99
@@ -222,14 +222,14 @@ components:
     Adquisicion:
       required:
         - tipo
-        - montoAdquisicion
-        - fechaAdquisicion
+        - monto_adquisicion
+        - fecha_adquisicion
       type: object
       example:
         id: 1
         tipo: 1
-        montoAdquisicion: 200.01
-        fechaAdquisicion: "2025-04-15"
+        monto_adquisicion: 200.01
+        fecha_adquisicion: "2025-04-15"
       additionalProperties: false
       properties:
         id:
@@ -241,14 +241,14 @@ components:
           example: 1
         tipo:
           $ref: "#/components/schemas/TipoAdquisiciones"
-        montoAdquisicion:
+        monto_adquisicion:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Precio de la adquisicion expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
-        fechaAdquisicion:
+        fecha_adquisicion:
           type: string
           pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           maxLength: 10
@@ -259,17 +259,17 @@ components:
       required:
         - tipo
         - porcentaje
-        - notarioRetiene
-        - residenteFiscalMexico
-        - excentaImpuesto
+        - notario_retiene
+        - residente_fiscal_mexico
+        - excenta_impuesto
       type: object
       example:
         id: 1
         tipo: 1
         porcentaje: 99
-        notarioRetiene: true
-        residenteFiscalMexico: true
-        excentaImpuesto: true
+        notario_retiene: true
+        residente_fiscal_mexico: true
+        excenta_impuesto: true
       additionalProperties: false
       properties:
         id:
@@ -288,35 +288,35 @@ components:
           format: float
           description: Porcentaje (%) de enajenacion del inmueble en numero entero
           example: 99
-        notarioRetiene:
+        notario_retiene:
           type: boolean
           description: Indica si al enajenante se le debe retener el impuesto
           example: true
-        residenteFiscalMexico:
+        residente_fiscal_mexico:
           type: boolean
           description: Indica si el enajenante tiene residencia fiscal en el extranjero
           example: true
-        excentaImpuesto:
+        excenta_impuesto:
           type: boolean
           description: Indica si el enajenante excenta el impuesto
           example: true
     Deduccion:
       required:
         - tipo
-        - enajenantesConsiderados
-        - conceptoDeduccion
-        - montoDeduccion
-        - fechaDeduccion
+        - enajenantes_considerados
+        - concepto_deduccion
+        - monto_deduccion
+        - fecha_deduccion
       type: object
       example:
         id: 1
         tipo: 1
-        enajenantesConsiderados:
+        enajenantes_considerados:
           - id: 1
           - id: 2
-        conceptoDeduccion: "ISR calculado con base en tablas del SAT para el año 2025."
-        montoDeduccion: 200.01
-        fechaDeduccion: "2025-04-15"
+        concepto_deduccion: "ISR calculado con base en tablas del SAT para el año 2025."
+        monto_deduccion: 200.01
+        fecha_deduccion: "2025-04-15"
       additionalProperties: false
       properties:
         id:
@@ -328,7 +328,7 @@ components:
           example: 1
         tipo:
           $ref: "#/components/schemas/TipoDeducciones"
-        enajenantesConsiderados:
+        enajenantes_considerados:
           type: array
           maxItems: 999
           description: Lista de identificadores de los enajenantes
@@ -347,20 +347,20 @@ components:
                 format: int64
                 description: Identificador del enajenante
                 example: 1
-        conceptoDeduccion:
+        concepto_deduccion:
           type: string
           pattern: "^[A-Za-z0-9_ ]+"
           maxLength: 255
           description: Concepto de la deduccion
           example: "Mejoras a la construccion"
-        montoDeduccion:
+        monto_deduccion:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Monto total (Sin proporción de la deduccion expresada) de la deduccion expresada en nuevos pesos mexicanos (MXN)
           example: 200.01
-        fechaDeduccion:
+        fecha_deduccion:
           type: string
           pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           maxLength: 255
@@ -370,47 +370,47 @@ components:
     ConfiguracionCalculo:
       type: object
       example:
-        primeraEnajenacionParcelaEjidal: true
-        compensarGananciaPerdida: true
-        metodoCalculoActualizacion: 1
+        primera_enajenacion_parcela_ejidal: true
+        compensar_ganancia_perdida: true
+        metodo_calculo_actualizacion: 1
       additionalProperties: false
       required:
-        - primeraEnajenacionParcelaEjidal
-        - compensarGananciaPerdida
-        - metodoCalculoActualizacion
+        - primera_enajenacion_parcela_ejidal
+        - compensar_ganancia_perdida
+        - metodo_calculo_actualizacion
       properties:
-        primeraEnajenacionParcelaEjidal:
+        primera_enajenacion_parcela_ejidal:
           type: boolean
           description: Indica si es una parcela y es su primera venta
           example: true
-        compensarGananciaPerdida:
+        compensar_ganancia_perdida:
           type: boolean
           description: Indica si se compensa el calcuo cuando existe perdida por parte del calculo
           example: true
-        metodoCalculoActualizacion:
+        metodo_calculo_actualizacion:
           $ref: "#/components/schemas/TipoCalculos"
     DatosInmueble:
       type: object
       example:
-        tipoInmueble: 1
-        metrosTerreno: 10.01
-        metrosDesplanteConstruccion: 5.05
+        tipo_inmueble: 1
+        metros_terreno: 10.01
+        metros_desplante_construccion: 5.05
       additionalProperties: false
       required:
-        - tipoInmueble
-        - metrosTerreno
-        - metrosDesplanteConstruccion
+        - tipo_inmueble
+        - metros_terreno
+        - metros_desplante_construccion
       properties:
-        tipoInmueble:
+        tipo_inmueble:
           $ref: "#/components/schemas/TipoInmuebles"
-        metrosTerreno:
+        metros_terreno:
           type: number
           minimum: 0
           maximum: 999999999999999.99
           format: float
           description: Metros cuadrados del terreno
           example: 10.01
-        metrosDesplanteConstruccion:
+        metros_desplante_construccion:
           type: number
           minimum: 0
           maximum: 999999999999999.99
